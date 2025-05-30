@@ -1,0 +1,27 @@
+version: "3"
+services:
+  app:
+    image: app-api
+    build:
+      context: .
+      args:
+        ENVIRONMENT: local
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src:/var/install/api/
+      - ./pyproject.toml:/var/install/api/pyproject.toml
+      - ./config.yaml:/var/install/api/config.yaml
+    depends_on:
+      - db
+    command: >
+          bash -c "uvicorn --host 0.0.0.0 --port 3000 app.asgi:app --reload"
+
+  db:
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=example
+      - POSTGRES_PASSWORD=example
+      - POSTGRES_DB=example
+    ports:
+      - "5432:5432"
